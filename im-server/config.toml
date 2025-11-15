@@ -1,0 +1,61 @@
+[mqtt]
+host = "127.0.0.1"
+port = 1883
+
+[server]
+port = 3000
+
+[database]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = "123456"
+database = "violet"
+
+[jwt]
+# ⚠️ 重要：JWT 密钥必须与 im-connect 的 JWT secret 完全相同
+# 因为 im-server 生成 token，im-connect 验证 token，secret 不一致会导致验证失败
+# 可通过环境变量 JWT_SECRET 覆盖（Docker 环境），两个服务会自动使用相同的值
+secret = "337eb69ef604dec5cdb04481242877fea7db31e4c1fd236497033431ab41d499"
+# ⚠️ 重要：JWT token 过期时间（小时），必须与 im-connect 的 expiration_hours 完全相同
+# 可通过环境变量 JWT_EXPIRATION_HOURS 覆盖（Docker 环境），统一配置
+expiration_hours = 24
+
+[redis]
+host = "127.0.0.1"
+port = 6379
+db = 0
+# password = ""  # 如果需要密码，取消注释并填写
+
+[upload]
+# 文件存储路径（相对路径或绝对路径）
+path = "uploads"
+# 最大图片文件大小（MB）
+max_image_size_mb = 10
+# 最大普通文件大小（MB，用于非图片文件）
+max_file_size_mb = 50
+# 是否启用图片处理（压缩和生成缩略图）
+enable_image_processing = true
+# 图片压缩质量（1-100，值越大质量越好但文件越大）
+image_quality = 85
+# 缩略图最大宽度（像素）
+thumbnail_max_width = 800
+# 缩略图最大高度（像素）
+thumbnail_max_height = 800
+# 是否保存原图（true: 保存原图和缩略图，false: 只保存处理后的图片）
+save_original = true
+
+[srs]
+# SRS 服务器地址（后端访问，Docker 环境使用 srs，本地开发使用 127.0.0.1）
+host = "http://127.0.0.1:1985"
+# SRS HTTP 服务器地址（后端访问，用于 WebRTC 播放）
+http_host = "http://127.0.0.1:8080"
+# WebRTC 端口
+webrtc_port = 8000
+# 应用名称
+app = "live"
+# 前端访问 SRS 的地址（前端在宿主机上，使用 localhost）
+client_host = "http://127.0.0.1:1985"
+# 前端访问 SRS HTTP 的地址
+client_http_host = "http://127.0.0.1:8080"
+

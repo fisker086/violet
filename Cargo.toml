@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "im-server",
+    "im-connect",
+    "im-share"
+]
+
+resolver = "2"

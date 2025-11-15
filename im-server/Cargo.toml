@@ -1,0 +1,27 @@
+[package]
+name = "im-server"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+axum = {version = "0.8.6", features = ["multipart"]}
+im-share = {path = "../im-share"}
+serde = {version = "1.0.228", features = ["derive"]}
+serde_json = "1.0.145"
+sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "mysql", "chrono", "uuid"] }
+jsonwebtoken = "9.3"
+bcrypt = "0.15"
+tokio = {version = "1.48.0", features = ["full"]}
+tracing = "0.1.41"
+tracing-subscriber = {version = "0.3.20" ,features = ["fmt", "env-filter"] }
+rumqttc = { version = "0.25", default-features = false, features = ["use-rustls"] }
+uuid = { version = "1.18", features = ["v4"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+dotenvy = "0.15"
+tower-http = { version = "0.6", features = ["cors", "trace", "limit"] }
+toml = "0.9"
+lazy_static = "1.5"
+redis = { version = "0.26", features = ["tokio-comp", "connection-manager"] }
+image = { version = "0.25", features = ["jpeg", "png", "webp"] }
+reqwest = { version = "0.12", features = ["json"] }
