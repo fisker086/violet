@@ -1,0 +1,137 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  # 使用 repository（owner/repo）作为镜像名前缀
+  IMAGE_NAME_PREFIX: ${{ github.repository }}
+
+jobs:
+  # 后端服务并行构建，提高效率
+  build-and-push-im-server:
+    name: Build and Push IM Server Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for IM Server Docker
+        id: meta-im-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-im-server
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push IM Server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./im-server/Dockerfile
+          push: true
+          tags: ${{ steps.meta-im-server.outputs.tags }}
+          labels: ${{ steps.meta-im-server.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Output IM Server image info
+        run: |
+          echo "Built IM Server image tags: ${{ steps.meta-im-server.outputs.tags }}"
+
+  build-and-push-im-connect:
+    name: Build and Push IM Connect Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for IM Connect Docker
+        id: meta-im-connect
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}-im-connect
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push IM Connect Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./im-connect/Dockerfile
+          push: true
+          tags: ${{ steps.meta-im-connect.outputs.tags }}
+          labels: ${{ steps.meta-im-connect.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Output IM Connect image info
+        run: |
+          echo "Built IM Connect image tags: ${{ steps.meta-im-connect.outputs.tags }}"
+
+  # 汇总构建结果
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-push-im-server, build-and-push-im-connect]
+    if: always()
+    steps:
+      - name: Check build status
+        run: |
+          echo "IM Server build status: ${{ needs.build-and-push-im-server.result }}"
+          echo "IM Connect build status: ${{ needs.build-and-push-im-connect.result }}"
+          if [ "${{ needs.build-and-push-im-server.result }}" != "success" ] || [ "${{ needs.build-and-push-im-connect.result }}" != "success" ]; then
+            echo "One or more builds failed"
+            exit 1
+          fi
+          echo "All builds completed successfully!"
