@@ -1,5 +1,5 @@
 # 多阶段构建 - 构建阶段
-FROM rust:1.83-slim as builder
+FROM rust:nightly-slim as builder
 
 # 安装构建依赖
 RUN apt-get update && apt-get install -y \
