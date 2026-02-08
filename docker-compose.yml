@@ -101,9 +101,7 @@ services:
   # 对外端口：通过 Nginx 代理，不直接暴露
   # 内部端口：3000（仅用于容器间通信）
   im-server:
-    build:
-      context: .
-      dockerfile: ./im-server/Dockerfile
+    image: ghcr.nju.edu.cn/fisker086/violet-im-server:latest
     container_name: violet-im-server
     restart: unless-stopped
     # 注意：生产环境建议不直接暴露端口，通过 Nginx 统一代理
@@ -157,9 +155,7 @@ services:
   # 对外端口：通过 Nginx 代理，不直接暴露
   # 内部端口：3001（仅用于容器间通信）
   im-connect:
-    build:
-      context: .
-      dockerfile: ./im-connect/Dockerfile
+    image: ghcr.nju.edu.cn/fisker086/violet-im-connect:latest
     container_name: violet-im-connect
     restart: unless-stopped
     # 注意：生产环境建议不直接暴露端口，通过 Nginx 统一代理
