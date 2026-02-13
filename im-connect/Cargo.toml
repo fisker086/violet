@@ -1,22 +1,34 @@
 [package]
 name = "im-connect"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+
+[build-dependencies]
+prost-build = "0.13"
+protoc-bin-vendored = "3"
 
 [dependencies]
-im-share = {path = "../im-share"}
-tokio = { version = "1.48.0", features = ["full"] }
-rumqttc = { version = "0.24", default-features = false, features = ["use-rustls"] }
-serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.7", features = ["ws", "json", "macros"] }
+tower-http = { version = "0.5", features = ["cors"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
-dotenvy = "0.15"
-axum = { version = "0.8.6", features = ["ws"] }
-serde = { version = "1.0", features = ["derive"] }
-anyhow = "1.0"
-toml = "0.9"
-once_cell = "1.20"
-reqwest = { version = "0.12", features = ["json"] }
-tower-http = { version = "0.6", features = ["cors"] }
-jsonwebtoken = "9.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+prost = "0.13"
+prost-types = "0.13"
+bytes = "1"
+dashmap = "6"
+futures = "0.3"
+futures-util = "0.3"
+thiserror = "2"
+anyhow = "1"
+uuid = { version = "1", features = ["v4"] }
+jsonwebtoken = "9"
+redis = { version = "0.28", features = ["tokio-comp"] }
+lapin = { version = "2", features = ["rustls"] }
+nacos-sdk = "0.6"
 chrono = { version = "0.4", features = ["serde"] }
+urlencoding = "2"
+clap = { version = "4", features = ["derive"] }
+hostname = "0.4"
